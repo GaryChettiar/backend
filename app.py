@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 # Load your CSV file
-projects_df = pd.read_csv("details.csv")
+projects_df = pd.read_csv("details.csv", encoding='latin1')  # or 'windows-1252'
 
 # Similarity computation logic
 def compute_cosine_similarity(user_interests, project_domains, project_tools):
