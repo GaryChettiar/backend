@@ -15,7 +15,7 @@ db = firestore.Client()
 
 # Fetch projects from Firestore
 def fetch_projects_from_firestore():
-    collection_ref = db.collection('projects')  # Replace 'projects' with your actual collection name
+    collection_ref = db.collection('Projects')  # Replace 'projects' with your actual collection name
     docs = collection_ref.stream()
     project_list = []
 
@@ -40,17 +40,17 @@ def recommend_projects(user_interests):
     recommendations = []
 
     for project in projects:
-        domains = str(project.get('Domain of Work', '')).lower().split(', ')
-        tools = str(project.get('Tools used/Using', '')).lower().split(', ')
+        domains = str(project.get('Domain', '')).lower().split(', ')
+        tools = str(project.get('Tools', '')).lower().split(', ')
         score = compute_cosine_similarity(user_interests, domains, tools)
 
         if score > 0:
             recommendations.append({
                 'id': project['id'],
-                'title': project.get('Title of the Project', ''),
-                'description': project.get('Describe your project/problem statement', ''),
-                'domain': project.get('Domain of Work', ''),
-                'tools': project.get('Tools used/Using', ''),
+                'title': project.get('Title', ''),
+                'description': project.get('Describe', ''),
+                'domain': project.get('Domain', ''),
+                'tools': project.get('Tools', ''),
                 'similarity_score': score
             })
 
