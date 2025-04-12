@@ -6,8 +6,8 @@ import os
 
 app = Flask(__name__)
 
-# Set path to your service account key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path/to/your/serviceAccountKey.json"
+# Load your CSV file
+projects_df = pd.read_csv("details.csv", encoding='latin1')  # or 'windows-1252'
 
 # Initialize Firestore client
 db = firestore.Client()
