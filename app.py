@@ -3,9 +3,10 @@ from google.cloud import firestore
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import os
-
+from flask_cors import CORS 
 app = Flask(__name__)
 
+CORS(app)  # 🚀 enable CORS for all routes
 # Set path to your service account key
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
