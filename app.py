@@ -7,7 +7,8 @@ import os
 app = Flask(__name__)
 
 # Set path to your service account key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "firebase-key/serviceAccountKey.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
 
 # Initialize Firestore client
 db = firestore.Client()
