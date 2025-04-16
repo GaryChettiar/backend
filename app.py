@@ -28,11 +28,22 @@ def fetch_projects_from_firestore():
     return project_list
 
 # Compute cosine similarity between interests and project info
-def compute_cosine_similarity(user_interests, project_domains, project_tools):
-    all_texts = [', '.join(user_interests), ', '.join(project_domains + project_tools)]
-    vectorizer = TfidfVectorizer().fit_transform(all_texts)
-    vectors = vectorizer.toarray()
-    return cosine_similarity(vectors)[0][1]
+def compute_cosine_similarity(user_interests, domains, tools):
+    all_texts = [' '.join(user_interests), ' '.join(domains), ' '.join(tools)]
+
+    # Prevent TF-IDF crash due to empty input or only stopwords
+    if not any(text.strip() for text in all_texts):
+        return 0.0
+
+    try:
+        vectorizer = TfidfVectorizer()
+        tfidf_matrix = vectorizer.fit_transform(all_texts)
+        similarity_matrix = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
+        return similarity_matrix.mean()
+    except ValueError as e:
+        print("TF-IDF failed:", e)
+        return 0.0
+
 
 # Recommend projects
 def recommend_projects(user_interests):
@@ -60,8 +71,11 @@ def recommend_projects(user_interests):
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
-    data = request.json
-    user_interests = data.get("interests", [])
+   data = request.get_json()
+    interests = data.get('interests', [])
+
+    if not interests:
+        return jsonify({"posts": []}) 
     recommendations = recommend_projects(user_interests)
     return jsonify(recommendations)
 
