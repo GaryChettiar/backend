@@ -57,6 +57,7 @@ def recommend_projects(user_interests):
         if score > 0:
             recommendations.append({
                 'id': project['id'],
+                'name':project.get('Name',''),
                 'title': project.get('Title', ''),
                 'description': project.get('Describe', ''),
                 'domain': project.get('Domain', ''),
