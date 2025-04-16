@@ -3,20 +3,20 @@ from google.cloud import firestore
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import os
-from flask_cors import CORS 
-app = Flask(__name__)
+from flask_cors import CORS
 
-CORS(app)  # 🚀 enable CORS for all routes
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+
 # Set path to your service account key
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
 
 # Initialize Firestore client
 db = firestore.Client()
 
 # Fetch projects from Firestore
 def fetch_projects_from_firestore():
-    collection_ref = db.collection('Projects')  # Replace 'projects' with your actual collection name
+    collection_ref = db.collection('Projects')
     docs = collection_ref.stream()
     project_list = []
 
@@ -24,14 +24,13 @@ def fetch_projects_from_firestore():
         data = doc.to_dict()
         data['id'] = doc.id
         project_list.append(data)
-    
+
     return project_list
 
-# Compute cosine similarity between interests and project info
+# Compute cosine similarity
 def compute_cosine_similarity(user_interests, domains, tools):
     all_texts = [' '.join(user_interests), ' '.join(domains), ' '.join(tools)]
 
-    # Prevent TF-IDF crash due to empty input or only stopwords
     if not any(text.strip() for text in all_texts):
         return 0.0
 
@@ -43,7 +42,6 @@ def compute_cosine_similarity(user_interests, domains, tools):
     except ValueError as e:
         print("TF-IDF failed:", e)
         return 0.0
-
 
 # Recommend projects
 def recommend_projects(user_interests):
@@ -71,13 +69,14 @@ def recommend_projects(user_interests):
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
-   data = request.get_json()
+    data = request.get_json()
     interests = data.get('interests', [])
 
     if not interests:
-        return jsonify({"posts": []}) 
-    recommendations = recommend_projects(user_interests)
-    return jsonify(recommendations)
+        return jsonify({"posts": []})
+
+    recommendations = recommend_projects(interests)
+    return jsonify({"posts": recommendations})
 
 if __name__ == '__main__':
     app.run(debug=True)
